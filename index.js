@@ -2,13 +2,17 @@ const http = require('http');
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
+const os = require('os');
 const JSZip = require('jszip');
 const YTDlpWrap = require('yt-dlp-wrap').default;
 const ffmpeg = require('@ffmpeg-installer/ffmpeg');
 
 const PORT = process.env.PORT || 3000;
-const ytDlpPath = path.join(__dirname, 'yt-dlp.exe');
-const outputFolder = path.join(__dirname, 'my_audio_library');
+const isVercel = !!process.env.VERCEL;
+const baseDir = isVercel ? os.tmpdir() : __dirname;
+const binaryName = process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp';
+const ytDlpPath = path.join(baseDir, binaryName);
+const outputFolder = path.join(baseDir, 'my_audio_library');
 
 // Ensure output folder exists
 if (!fs.existsSync(outputFolder)) {

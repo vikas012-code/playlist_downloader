@@ -78,13 +78,45 @@ playlist_downloader/
 
 ---
 
+## 🌐 Deploying to Vercel
+
+### Method 1: Deploy via GitHub (Recommended)
+
+1. Commit and push your latest code to GitHub:
+   ```bash
+   git add .
+   git commit -m "add vercel deployment config"
+   git push origin main
+   ```
+2. Log into [Vercel](https://vercel.com/) and click **"Add New"** > **"Project"**.
+3. Import your GitHub repository (`playlist_downloader`).
+4. Keep all default settings (Framework Preset: **Other**, Build Command: empty).
+5. Click **"Deploy"**. Vercel will deploy your app instantly!
+
+---
+
+### Method 2: Deploy via Vercel CLI
+
+1. Install Vercel CLI globally:
+   ```bash
+   npm i -g vercel
+   ```
+2. Run the deployment command in your project directory:
+   ```bash
+   vercel
+   ```
+3. Follow the CLI prompts to deploy directly.
+
+---
+
 ## 🐞 Troubleshooting
 
-- **Binary Download Issues**: If `yt-dlp.exe` fails to download automatically on startup, manually download `yt-dlp.exe` from [https://github.com/yt-dlp/yt-dlp/releases/latest](https://github.com/yt-dlp/yt-dlp/releases/latest) and copy it to the root project folder.
-- **Port Conflict**: By default, the server runs on port `3000`. You can change it by running: `PORT=8080 npm start`.
+- **Binary Download Issues**: If `yt-dlp` fails to download automatically on startup, manually download `yt-dlp` / `yt-dlp.exe` from [https://github.com/yt-dlp/yt-dlp/releases/latest](https://github.com/yt-dlp/yt-dlp/releases/latest) and place it in the project root.
+- **Port Conflict**: By default locally, the server runs on port `3000`. Change it by running: `PORT=8080 npm start`.
 
 ---
 
 ## 📜 License
 
 ISC License.
+
