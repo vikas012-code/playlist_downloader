@@ -1,0 +1,19 @@
+{
+  "name": "ppt",
+  "version": "1.0.0",
+  "main": "ppt.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "description": "",
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "pptxgenjs": "^4.0.1",
+    "yt-dlp-wrap": "^2.3.12"
+  }
+}
