@@ -10,6 +10,28 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Fullscreen Server Startup / Wakeup Loader Overlay -->
+    <div id="server-loader" class="server-loader">
+        <div class="loader-content">
+            <div class="glow-spinner-wrapper">
+                <div class="glow-spinner"></div>
+                <div class="inner-pulse-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+            </div>
+            <h2>Connecting to Server...</h2>
+            <p id="loader-status">Waking up backend service. Please wait a moment...</p>
+            <div class="loader-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- Header -->
         <header class="app-header">

@@ -25,9 +25,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const zipSubtitle = document.getElementById('zip-subtitle');
     const downloadZipBtn = document.getElementById('download-zip-btn');
 
+    // Server Startup Loader Elements
+    const serverLoader = document.getElementById('server-loader');
+    const loaderStatus = document.getElementById('loader-status');
+
     let eventSource = null;
     let trackMap = new Map(); // trackId -> { title, status }
     let trackOrder = [];
+
+    // --- SERVER WAKEUP HEALTH CHECK ---
+    async function checkServerHealth() {
+        let attempts = 0;
+        const maxAttempts = 30; // 30 seconds max timeout
+
+        async function ping() {
+            attempts++;
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 sec timeout per fetch
+
+                const res = await fetch('/api/health', { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.status === 'ok') {
+                        // Hide startup loader smoothly
+                        serverLoader.classList.add('hidden');
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.log(`Server wakeup ping attempt ${attempts} failed, retrying...`);
+            }
+
+            if (attempts > 5) {
+                loaderStatus.textContent = 'Server spin up in progress (free tier spinup may take ~15s)...';
+            } else if (attempts > 12) {
+                loaderStatus.textContent = 'Still waking up server... Almost ready!';
+            }
+
+            if (attempts < maxAttempts) {
+                setTimeout(ping, 1000);
+            } else {
+                loaderStatus.textContent = 'Server response took too long. Please refresh the page.';
+            }
+        }
+
+        ping();
+    }
+
+    // Run health check on startup
+    checkServerHealth();
 
     // Format radio active toggle
     document.querySelectorAll('input[name="format"]').forEach(radio => {

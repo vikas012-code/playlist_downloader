@@ -92,6 +92,12 @@ const server = http.createServer(async (req, res) => {
 
     // API Routes
 
+    // 0. Server Health Check Endpoint
+    if (req.method === 'GET' && pathname === '/api/health') {
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        return res.end(JSON.stringify({ status: 'ok', ready: true, uptime: process.uptime() }));
+    }
+
     // 1. SSE Connection Endpoint
     if (req.method === 'GET' && pathname === '/api/stream') {
         res.writeHead(200, {
