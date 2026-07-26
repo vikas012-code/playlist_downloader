@@ -78,34 +78,32 @@ playlist_downloader/
 
 ---
 
-## 🌐 Deploying to Vercel
+## 🌐 Recommended Deployment: Render.com (100% Free)
 
-### Method 1: Deploy via GitHub (Recommended)
+> [!IMPORTANT]
+> **Why Render / Railway instead of Vercel?**  
+> `yt-dlp` requires `python3` to execute on Linux. Vercel serverless containers **do not include Python 3**, resulting in `env: 'python3': No such file or directory`.  
+> Platforms like **Render.com**, **Railway.app**, or **Koyeb.com** provide full Linux environments with Python 3 pre-installed.
 
-1. Commit and push your latest code to GitHub:
+### Deploying to Render.com (Free)
+
+1. **Push your code to GitHub**:
    ```bash
    git add .
-   git commit -m "add vercel deployment config"
+   git commit -m "add render deployment blueprint"
    git push origin main
    ```
-2. Log into [Vercel](https://vercel.com/) and click **"Add New"** > **"Project"**.
-3. Import your GitHub repository (`playlist_downloader`).
-4. Keep all default settings (Framework Preset: **Other**, Build Command: empty).
-5. Click **"Deploy"**. Vercel will deploy your app instantly!
+2. Go to **[Render.com Dashboard](https://dashboard.render.com/)** and sign in.
+3. Click **"New +"** → **"Web Service"**.
+4. Connect your GitHub repository (`playlist_downloader`).
+5. Configure settings:
+   - **Environment**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Instance Type**: `Free`
+6. Click **"Create Web Service"**.
 
----
-
-### Method 2: Deploy via Vercel CLI
-
-1. Install Vercel CLI globally:
-   ```bash
-   npm i -g vercel
-   ```
-2. Run the deployment command in your project directory:
-   ```bash
-   vercel
-   ```
-3. Follow the CLI prompts to deploy directly.
+Render will deploy your app, and your media downloader with live tracking, cancellation, and ZIP export will be live!
 
 ---
 
