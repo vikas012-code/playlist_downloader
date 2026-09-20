@@ -185,15 +185,27 @@ const server = http.createServer(async (req, res) => {
                     console.log(`[ytDlpEvent] ${eventType}: ${eventData}`);
 
                     // Parse title or song downloading event
-                    if (eventData.includes('[download] Destination:') || eventData.includes('[ExtractAudio] Destination:')) {
+                    if (eventData.includes('Destination:')) {
                         const filename = path.basename(eventData.split('Destination:')[1].trim());
                         const songTitle = path.parse(filename).name;
                         currentSong = songTitle;
                         broadcast({ type: 'song_downloading', title: songTitle, filename });
-                    } else if (eventData.includes('[download] Downloading item')) {
+                    } else if (eventData.includes('has already been downloaded')) {
+                        const filePath = eventData.split(' has already been downloaded')[0].trim();
+                        const songTitle = path.parse(filePath).name;
+                        currentSong = songTitle;
+                        broadcast({ type: 'song_downloading', title: songTitle, filename: path.basename(filePath) });
+                        broadcast({ type: 'song_completed', title: songTitle });
+                    } else if (eventData.includes('Downloading item') || eventData.includes('Downloading video')) {
                         broadcast({ type: 'status', message: eventData.trim() });
                     } else if (eventData.includes('100% of') && currentSong) {
                         broadcast({ type: 'song_completed', title: currentSong });
+                    }
+                    
+                    // Parse playlist sequence
+                    const seqMatch = eventData.match(/Downloading (?:video|item) (\d+) of (\d+)/);
+                    if (seqMatch) {
+                        broadcast({ type: 'playlist_progress', current: seqMatch[1], total: seqMatch[2] });
                     }
                 });
 

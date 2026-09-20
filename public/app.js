@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let eventSource = null;
     let trackMap = new Map(); // trackId -> { title, status }
     let trackOrder = [];
+    let totalTracks = 0;
 
     // --- SERVER WAKEUP HEALTH CHECK ---
     async function checkServerHealth() {
@@ -179,6 +180,11 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'song_completed':
                 updateSongStatus(data.title || data.filename, 'downloaded');
                 break;
+                
+            case 'playlist_progress':
+                totalTracks = parseInt(data.total, 10) || totalTracks;
+                updateStats();
+                break;
 
             case 'progress':
                 if (data.percent !== undefined) {
@@ -264,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderSongList() {
         songsSection.classList.remove('hidden');
-        trackCounter.textContent = `${trackMap.size} track(s)`;
+        updateStats();
         songsList.innerHTML = '';
 
         trackOrder.forEach(key => {
@@ -310,6 +316,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function updateStats() {
+        let downloaded = 0;
+        let downloading = 0;
+        trackMap.forEach(track => {
+            if (track.status === 'downloaded') downloaded++;
+            if (track.status === 'downloading') downloading++;
+        });
+        
+        let pending = totalTracks > 0 ? Math.max(0, totalTracks - downloaded - downloading) : 0;
+        
+        if (totalTracks > 0) {
+            trackCounter.textContent = `Total: ${totalTracks} | Downloaded: ${downloaded} | Pending: ${pending}`;
+        } else {
+            trackCounter.textContent = `${trackMap.size} track(s)`;
+        }
+    }
+
     function setDownloadingState(isDownloading) {
         if (isDownloading) {
             startBtn.disabled = true;
@@ -332,6 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function resetUI() {
         trackMap.clear();
         trackOrder = [];
+        totalTracks = 0;
         songsList.innerHTML = '';
         songsSection.classList.add('hidden');
         zipSection.classList.add('hidden');
