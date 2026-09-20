@@ -25,11 +25,44 @@ let isCancelled = false;
 let sseClients = [];
 let currentSong = null;
 
+const https = require('https');
+
 // Download yt-dlp binary if missing
 async function ensureBinary() {
     if (!fs.existsSync(ytDlpPath)) {
-        console.log('yt-dlp binary not found. Downloading latest binary from GitHub...');
-        await YTDlpWrap.downloadFromGithub(ytDlpPath);
+        console.log('yt-dlp binary not found. Downloading directly from GitHub releases...');
+        
+        let platformStr = 'yt-dlp';
+        if (process.platform === 'win32') platformStr = 'yt-dlp.exe';
+        else if (process.platform === 'darwin') platformStr = 'yt-dlp_macos';
+        
+        const downloadUrl = `https://github.com/yt-dlp/yt-dlp/releases/latest/download/${platformStr}`;
+
+        await new Promise((resolve, reject) => {
+            function download(url) {
+                https.get(url, (res) => {
+                    if (res.statusCode === 301 || res.statusCode === 302) {
+                        return download(res.headers.location);
+                    }
+                    if (res.statusCode !== 200) {
+                        return reject(new Error(`Failed to download: ${res.statusCode}`));
+                    }
+                    const file = fs.createWriteStream(ytDlpPath);
+                    res.pipe(file);
+                    file.on('finish', () => {
+                        file.close();
+                        if (process.platform !== 'win32') {
+                            try { fs.chmodSync(ytDlpPath, '755'); } catch (e) {}
+                        }
+                        resolve();
+                    });
+                }).on('error', (err) => {
+                    fs.unlink(ytDlpPath, () => reject(err));
+                });
+            }
+            download(downloadUrl);
+        });
+        
         console.log('yt-dlp binary downloaded successfully.');
     }
 }
