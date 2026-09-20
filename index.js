@@ -188,8 +188,22 @@ const server = http.createServer(async (req, res) => {
                     '--add-metadata',
                     '--ignore-errors',
                     '--ffmpeg-location', ffmpeg.path,
-                    '--extractor-args', 'youtube:player_client=android,web'
+                    '--js-runtimes', 'node'
                 ];
+
+                const cookiesPath = path.join(baseDir, 'cookies.txt');
+                
+                // If YT_COOKIE environment variable is provided, write it to cookies.txt on the fly
+                const cookieString = process.env.YT_COOKIE;
+                if (cookieString) {
+                    // Unescape newlines if they are passed as \n literals
+                    const formattedCookies = cookieString.replace(/\\n/g, '\n');
+                    fs.writeFileSync(cookiesPath, formattedCookies);
+                }
+
+                if (fs.existsSync(cookiesPath)) {
+                    ytArgs.push('--cookies', cookiesPath);
+                }
 
                 if (format === 'mp3') {
                     ytArgs.push('-x', '--audio-format', 'mp3', '--audio-quality', '5');
