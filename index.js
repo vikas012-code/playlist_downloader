@@ -57,7 +57,7 @@ const server = http.createServer(async (req, res) => {
     // Static file serving helper
     if (req.method === 'GET' && !pathname.startsWith('/api/')) {
         let filePath = path.join(__dirname, 'public', pathname === '/' ? 'index.html' : pathname);
-        
+
         // Prevent path traversal
         if (!filePath.startsWith(path.join(__dirname, 'public'))) {
             res.writeHead(403);
@@ -293,6 +293,20 @@ const server = http.createServer(async (req, res) => {
                 'Content-Length': zipBuffer.length
             });
             res.end(zipBuffer);
+
+            // Clean up files after generating zip
+            for (const file of files) {
+                const filePath = path.join(outputFolder, file);
+                if (fs.existsSync(filePath)) {
+                    try {
+                        fs.unlinkSync(filePath);
+                    } catch (err) {
+                        console.error('Error deleting file:', err);
+                    }
+                }
+            }
+            console.log('Cleaned up downloaded files after ZIP generation.');
+
         } catch (err) {
             console.error('Error generating zip:', err);
             res.writeHead(500, { 'Content-Type': 'text/plain' });
